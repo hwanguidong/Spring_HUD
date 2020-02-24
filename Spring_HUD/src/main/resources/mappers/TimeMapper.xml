@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hud.mapper.TimeMapper">
+	<select id="getTime1" resultType="hashmap"> <!-- id는 메소드역할  resultType는 리턴타입 역할 -->
+		select *from member2
+	</select>
+
+	<insert id="ins">
+	insert into board values('aaa','bbb')
+	</insert>
+	
+	<update id="up">
+	update board
+	set password='5678'
+	where id='aaa'	
+	</update>
+	
+	<delete id="">
+	delete from board where id='aaa'	
+	</delete>
+	
+	
+</mapper>
+
+
+

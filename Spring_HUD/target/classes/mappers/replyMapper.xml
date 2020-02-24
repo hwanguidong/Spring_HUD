@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hud.mapper.replyMapper">
+
+
+<!--  댓글 리스트 -->
+<select id="readReply" resultType="com.hud.model.ReplyVo">
+select
+	rno,content,writer,regDate
+from myReply 
+where no=#{no};
+</select>
+
+
+<!-- 댓글 작성 -->
+<insert id="writeReply">
+ insert into
+  myReply(no,  content, writer)
+    values(#{no}, #{content}, #{writer})
+</insert>
+
+<!-- 특정 댓글 조회 -->
+<select id="readReplySelect" resultType="com.hud.model.ReplyVo">
+ select
+     no, rno, content, writer, regDate
+ from myReply
+     where rno = #{rno}
+</select>
+
+<!-- 댓글 수정 -->
+<update id="updateReply">
+ update myReply
+     set
+         content = #{content}
+     where rno = #{rno}
+</update>
+
+<!-- 댓글 삭제 -->
+<delete id="deleteReply">
+ delete from myReply
+  where rno = #{rno}
+</delete> 
+
+
+
+
+
+
+
+
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hud.mapper.MemberMapper">
+	
+	<!-- 아이디 중복 검사 -->
+	<select id="check_id" parameterType="String" resultType="int">
+		select count(*) from members where id = #{id}
+	</select>
+	
+	<!-- 이메일 중복 검사 -->
+	<select id="check_email" parameterType="String" resultType="int">
+		select count(*) from members where email = #{email}
+	</select>
+	
+	<!-- 회원 가입 -->
+	<insert id="join_member" parameterType="com.hud.model.MemberVo">
+		insert into members values(#{id}, #{pw}, #{email}, now(), now(), 'false', #{email_key},'0')
+	</insert>
+	
+	<!-- 이메일 인증 -->
+	<update id="email_member" parameterType="com.hud.model.MemberVo">
+		update members set email_status = 'true' where email = #{email} and email_key = #{email_key}
+	</update>
+	
+	<!-- 로그인 -->
+	<select id="login" parameterType="String" resultType="com.hud.model.MemberVo">
+		select *from members where id=#{id}	
+	</select>
+	
+	<!-- 로그인 접속일자 수정 -->
+	<update id="update_log" parameterType="String">
+		update members set log_date = now() where id = #{id}
+	</update>
+	
+	<!-- 아이디 찾기 -->
+	<select id="find_id" parameterType="String" resultType="String">
+		select id from members where email = #{email}
+	</select>
+	
+	<!-- 비밀번호 변경 -->
+	<update id="update_pw" parameterType="com.hud.model.MemberVo">
+		update members set pw = #{pw} where id = #{id}
+	</update>
+	
+	<!-- 회원정보 수정 -->
+	<update id="update_mypage" parameterType="com.hud.model.MemberVo">
+		update members set email = #{email} where id = #{id}
+	</update>
+	<!-- 회원탈퇴 -->
+	<delete id="delmem" parameterType="com.hud.model.MemberVo">
+		delete  from members where id=#{id} and pw=#{pw} 
+	</delete>
+	
+	
+</mapper>

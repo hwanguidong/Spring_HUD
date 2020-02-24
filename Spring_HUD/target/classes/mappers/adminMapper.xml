@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hud.mapper.AdminMapper">
+
+
+
+<!-- 상품 등록 -->
+<insert id="register">     
+     insert into tbl_goods3 ( gdsName,cateCode,  gdsPrice, gdsStock, gdsDes,gdsImg,gdsThumbImg)
+     values ( #{gdsName},#{cateCode}, #{gdsPrice}, #{gdsStock}, #{gdsDes} ,#{gdsImg}, #{gdsThumbImg})
+</insert>
+
+ <!-- 상품 목록 --> 
+<select id="goodslist" resultType="com.hud.model.GoodsVo">
+ select gdsNum,gdsName,cateCode , gdsPrice, gdsStock, gdsDes,gdsImg,gdsDate,gdsThumbImg
+		from tbl_goods3
+			order by gdsNum desc;
+	
+			
+</select>
+
+<!-- 상품목록 페이징 -->
+<select id="goodsListPage" resultType="com.hud.model.GoodsVo">
+select  gdsNum,gdsName,cateCode , gdsPrice, gdsStock, gdsDes,gdsImg,gdsDate,gdsThumbImg
+	from(
+	select @rownum:=@rownum+1 as rownum, gdsNum,gdsName,cateCode , gdsPrice, gdsStock, gdsDes,gdsImg,gdsDate,gdsThumbImg 
+	from(select @rownum:=0)as rownum 
+	, tbl_goods3
+	<if test="keyword!=null">
+	where gdsName like concat('%',#{keyword},'%') 
+	</if>
+	order by gdsNum desc
+	) tbl_goods3 
+	<![CDATA[
+	where rownum >(#{pageNum}-1)*#{amount} 
+	and rownum<=#{pageNum}*#{amount}
+	]]> 
+
+</select>
+
+<!-- board테이블의 전체갯수: 페이징의 realEnd를 알기위해서 -->
+	<select id="goodsCount" resultType="int">
+	
+	select count(*) 
+	from tbl_goods3
+	<if test="keyword !=null">
+	where gdsName like concat('%',#{keyword},'%')
+	</if>
+	
+	
+	</select>
+
+
+
+<!-- 상품 조회 -->
+<!-- <select id="goodsView" resultType="com.hud.model.GoodsVo">
+  select gdsNum,gdsName,cateCode , gdsPrice, gdsStock, gdsDes,gdsImg,gdsDate,gdsImg,gdsThumbImg
+     from tbl_goods
+         where gdsNum = #{gdsNum}
+</select> -->
+
+<!-- 상품 조회+카테고리 조인 -->
+ <select id="goodsView" resultType="com.hud.model.GoodsViewVo">
+ 	select
+  g.gdsNum,g.gdsName,g.cateCode, c.cateCodeRef,c.cateName,gdsPrice,gdsStock,gdsDes,gdsImg,gdsThumbImg,gdsDate
+  from tbl_goods3 g
+	inner join goods_category3 c
+		on g.cateCode=c.cateCode
+        where g.gdsNum=#{gdsNum}
+ 
+ </select>
+
+<!-- 상품 수정 -->
+<update id="goodsModify">
+ update tbl_goods3
+     set
+         gdsName = #{gdsName},
+         cateCode =#{cateCode},         
+         gdsPrice = #{gdsPrice},
+         gdsStock = #{gdsStock},
+         gdsDes = #{gdsDes},
+         
+         gdsImg = #{gdsImg},
+         gdsThumbImg = #{gdsThumbImg}
+     where gdsNum = ${gdsNum}
+</update>
+<!-- 상품 삭제 -->
+<delete id="goodsDelete">
+ delete from
+     tbl_goods3
+ where gdsNum = #{gdsNum}
+</delete>
+
+<!-- 카테고리 호출 -->
+<select id="category" resultType="com.hud.model.CategoryVo">
+
+     WITH TBL AS(
+SELECT '아우터' AS CATENAME , 100 AS CATECODE, NULL AS CATECODEREF FROM dual UNION ALL
+SELECT '자켓' AS CATENAME , 101 AS CATECODE, 100 AS CATECODEREF FROM dual UNION ALL
+SELECT '페딩' AS CATENAME , 102 AS CATECODE, 100 AS CATECODEREF FROM dual UNION ALL
+SELECT '가디건' AS CATENAME , 103 AS CATECODE, 100 AS CATECODEREF FROM dual UNION ALL
+SELECT '점퍼' AS CATENAME , 104 AS CATECODE, 100 AS CATECODEREF FROM dual UNION ALL
+SELECT '조끼' AS CATENAME , 105 AS CATECODE, 100 AS CATECODEREF FROM dual UNION ALL
+SELECT '하의' AS CATENAME , 200 AS CATECODE, NULL AS CATECODEREF FROM dual UNION ALL
+SELECT '반바지' AS CATENAME , 201 AS CATECODE, 200 AS CATECODEREF FROM dual UNION ALL
+SELECT '청바지' AS CATENAME , 202 AS CATECODE, 200 AS CATECODEREF FROM dual UNION ALL
+SELECT '면바지' AS CATENAME , 203 AS CATECODE, 200 AS CATECODEREF FROM dual UNION ALL
+SELECT '슬렉스' AS CATENAME , 204 AS CATECODE, 200 AS CATECODEREF FROM dual UNION ALL
+SELECT '상의' AS CATENAME , 300 AS CATECODE, NULL AS CATECODEREF FROM dual UNION ALL
+SELECT '기모' AS CATENAME , 301 AS CATECODE, 300 AS CATECODEREF FROM dual UNION ALL
+SELECT '니트' AS CATENAME , 302 AS CATECODE, 300 AS CATECODEREF FROM dual UNION ALL
+SELECT '후드티' AS CATENAME , 303 AS CATECODE, 300 AS CATECODEREF FROM dual UNION ALL
+SELECT '나시' AS CATENAME , 304 AS CATECODE, 300 AS CATECODEREF FROM dual UNION ALL
+SELECT '신발' AS CATENAME , 400 AS CATECODE, NULL AS CATECODEREF FROM dual UNION ALL
+SELECT '스니커즈' AS CATENAME , 401 AS CATECODE, 400 AS CATECODEREF FROM dual UNION ALL
+SELECT '부츠/워커' AS CATENAME , 402 AS CATECODE, 400 AS CATECODEREF FROM dual UNION ALL
+SELECT '샌들/슬리퍼' AS CATENAME , 403 AS CATECODE, 400 AS CATECODEREF FROM dual UNION ALL
+SELECT '가방' AS CATENAME , 500 AS CATECODE, NULL AS CATECODEREF FROM dual UNION ALL
+SELECT '백팩' AS CATENAME , 501 AS CATECODE, 500 AS CATECODEREF FROM dual UNION ALL
+SELECT '크로스백' AS CATENAME , 502 AS CATECODE, 500 AS CATECODEREF FROM dual UNION ALL
+SELECT '토트백' AS CATENAME , 503 AS CATECODE, 500 AS CATECODEREF FROM dual 
+)
+SELECT 1 AS LEVEL, CATENAME, CATECODE, CATECODEREF FROM TBL WHERE CATECODEREF is NULL
+UNION ALL
+SELECT 2 AS LEVEL, CATENAME, CATECODE, CATECODEREF FROM TBL WHERE CATECODEREF IS NOT null
+ORDER BY CATECODE
+</select>
+
+
+<!-- 모든 유저의 주문 목록 -->
+<select id="orderList" resultType="com.hud.model.OrderVo">
+ select
+     orderId, userId, orderRec,
+     userAddr1, userAddr2, userAddr3,
+     orderPhon, amount, orderDate, delivery
+ from tbl_order
+</select>
+
+<!-- 특정 주문 목록 -->
+<select id="orderView" resultType="com.hud.model.OrderListVo">
+ select
+     o.orderId, o.userId, o.orderRec,
+     o.userAddr1, o.userAddr2, o.userAddr3,
+     o.orderPhon, o.amount, o.orderDate, o.delivery,
+     d.orderDetailsNum, d.gdsNum, d.cartStock,
+     g.gdsName, g.gdsThumbImg, g.gdsPrice
+ from tbl_order o
+         inner join tbl_order_details d
+             on o.orderId = d.orderId
+         inner join tbl_goods3 g
+             on d.gdsNum = g.gdsNum
+     where o.orderId = #{orderId}
+</select>
+
+<!-- 배송 상태 -->
+<update id="delivery">
+ update tbl_order
+     set delivery = #{delivery}
+ where orderId = #{orderId}
+ 
+</update>
+
+<!-- 상품 수량 조절 -->
+<update id="changeStock">
+ update tbl_goods3
+     set gdsStock = gdsStock - #{gdsStock}
+ where gdsNum = #{gdsNum}
+</update>
+
+<!--  모든 소감(댓글) -->
+<select id="allReply" resultType="com.hud.model.GoodsReplyListVo">
+ select
+     r.gdsNum, r.userId, r.repNum, r.repCon, r.repDate,
+     m.email
+ from tbl_reply r
+      inner join members m
+         on r.userId = m.Id
+</select>
+
+<!-- 소감(댓글) 지우기 -->
+<delete id="deleteReply">
+ delete from tbl_reply
+     where repNum = #{repNum}
+</delete>
+
+
+</mapper>

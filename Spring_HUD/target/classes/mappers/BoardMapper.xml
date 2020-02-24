@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hud.mapper.BoardMapper">
+<!-- 페이징 처리안한 전체목록 리스트	 -->
+	<select id="boardList" resultType="com.hud.model.BoardVo">
+	<![CDATA[
+	select *from board
+	]]>
+	</select>
+<!-- 	페이징 처리한 전체목록 리스트 -->
+	<select id="boardListPage" resultType="com.hud.model.BoardVo">
+	
+	select  no,subject,writer,write_date,cnt,img,thumbImg
+	from(
+	select @rownum:=@rownum+1 as rownum, no,subject,writer,write_date,cnt,img,thumbImg 
+	from(select @rownum:=0)as rownum 
+	, board
+	<if test="keyword!=null">
+	where subject like concat('%',#{keyword},'%') or writer like concat('%',#{keyword},'%')
+	</if>
+	order by no desc
+	) board 
+	<![CDATA[
+	where rownum >(#{pageNum}-1)*#{amount} 
+	and rownum<=#{pageNum}*#{amount}
+	]]> 
+	 
+	 
+	</select>
+	
+	<!-- 검색처리한 목록 리스트 -->
+	<!-- <select id="boardListPage" resultType="com.hud.model.BoardVo">
+	<![CDATA[
+	select  no,subject,writer,write_date,cnt
+	from(
+	select @rownum:=@rownum+1 as rownum, no,subject,writer,write_date,cnt 
+	from(select @rownum:=0)as rownum 
+	, board
+	where subject like %#{keyword}%
+	order by no desc
+	) board 
+	where rownum >(#{pageNum}-1)*#{amount} and rownum<=#{pageNum}*#{amount}
+	]]>
+	</select> -->
+	
+	
+	
+	
+	
+	
+	<!-- 제목을 클릭했을때 해당되는 게시물의 상세내용 -->
+	<select id="boardDetail" resultType="com.hud.model.BoardVo">
+	<![CDATA[
+	select *from board where no=#{no}
+	]]>
+	</select>
+	<!-- board테이블의 전체갯수: 페이징의 realEnd를 알기위해서 -->
+	<select id="boardCount" resultType="int">
+	
+	select count(*) 
+	from board
+	<if test="keyword !=null">
+	where subject like concat('%',#{keyword},'%')
+	</if>
+	
+	
+	</select>
+	 
+	
+	<!-- 글쓰기 -->
+	<insert id="boardWrite">
+	<![CDATA[
+	insert into board(subject,content,writer,write_date,cnt,img)
+	values(#{board.subject},#{board.content},#{board.writer},sysdate(),#{board.cnt},#{board.img})
+	]]>
+	</insert>
+	<!-- 글수정 -->
+	<update id="boardModify">
+	<![CDATA[
+	update board set subject=#{subject},content=#{content} where no=#{no}
+	]]>
+	</update>
+	<!-- 글삭제 -->
+	<delete id="boardDel">
+	<![CDATA[
+	delete from board where no=#{no}
+	]]>
+	
+	</delete>
+	
+	
+
+	
+	<!-- 조회수 올리기-->
+ <update id="updateViewCnt">
+
+        update board
+
+        set cnt = cnt + 1
+
+        where no = #{no}
+
+ </update>
+	
+	
+	
+	
+</mapper>
