@@ -295,11 +295,6 @@
 																								<i class="far fa-calendar-check"></i> 예약 가능
 																							</button>
 																						</c:when>
-																						<c:when test="${result.PLACE_INFO eq '울주365스마트' }">
-																							<button class="btn btn-danger" name="btn-reserv-info" style="position: relative; z-index: 1">
-																								<i class="far fa-window-close"></i> 예약 불가
-																							</button>
-																						</c:when>
 																						<c:otherwise>
 																							<button class="btn btn-danger" name="btn-reserv-info" style="position: relative; z-index: 1">
 																								<i class="far fa-window-close"></i> 예약 불가
